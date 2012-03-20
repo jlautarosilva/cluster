@@ -1,0 +1,24 @@
+Requisitos:
+
+
+*IBM PC 100% compatible lector de discos compactos/DVD. Requiere  
+software ofimatica con soporte .odt format, .doc format (ej: Libreoffice, Openoffice, Office 2007 o superior), lector de documentos pdf para versión tesis.pdf.
+
+*Blender 2.6 o superior para visualización de modelos 3D. www.blender.org
+
+
+
+Este CD incluye:
+
+*Documentos de la investigación.
+*Código fuente de pruebas.
+*Códio fuente de Kernel_Linux-3.0, MOSIX y MOSIX-VCL.
+*Script de Aumatización para Clusters tipo MOSIX.
+*Archivos de configuración.
+*Modelos utilizados para las pruebas.
+*Diagrama de Planificación Etapas de Cluster.
+
+
+
+Juan Lautaro Silva Ortiz.
+Rodrigo Alexis Venegas Muñoz.

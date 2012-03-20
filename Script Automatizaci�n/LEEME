@@ -1,0 +1,11 @@
+Descripcion: Script Post Instalacion para nodos en Cluster tipo MOSIX
+Autor: Rodrigo Alexis Venegas Muñoz, Juan Lautaro Silva Ortiz
+Fecha: 2 de diciembre 2011
+Versión: 1.0
+
+Instrucciones
+
+1.- Ejecutar con permisos de superusuario
+2.- Para ejecutar el script debe dar permisos de ejecucion en caso de ser necesario ej: chmod +x script
+3.- Al agregar un nuevo nodo al cluster debe añadir el número del nodo como parametro al script ej: ./script_post_instalacion.sh 2 (la configuracion usara la sintasis nodo2)
+

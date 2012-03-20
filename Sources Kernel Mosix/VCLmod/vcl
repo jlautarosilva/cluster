@@ -1,0 +1,228 @@
+#!/bin/sh -
+#
+
+# chkconfig: 2345 95 5
+# description: MOSIX-VCL is a Virtual OpenCL platofrm
+#	       for combining the power of many remote GPUs
+#
+# vcl		Script to stop/start MOSIX-VCL
+#
+# Author:       Amnon Shiloh
+### BEGIN INIT INFO
+# Provides: MOSIX-VCL
+# Required-Start: $network
+# Should-Start:
+# Required-Stop:
+# Should-Stop:
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: MOSIX-VCL
+# Description: VCL - Virtual OpenCL for combining the power of many remote GPUs
+### END INIT INFO
+#
+
+PATH=/sbin:/usr/sbin:/usr/local/sbin:/bin:/usr/bin:/usr/local/bin
+
+#. /etc/rc.status
+. /lib/lsb/init-functions
+
+[ -x /etc/init.d/functions ] && . /etc/init.d/functions
+
+stop_host() {
+#	[ -x /sbin/broker.old ] && {
+#		killproc /sbin/broker.old
+#		rc_check
+#	}
+	/sbin/start-stop-daemon --stop --exec /sbin/broker
+#	rc_check
+}
+
+stop_backend() {
+	s=0
+	[ -x /sbin/opencld ] && {
+		#status_of_proc /sbin/opencld
+		case $? in 7) : ;;
+			0) s=1
+			   /sbin/start-stop-daemon --stop --exec /sbin/opencld
+#			   rc_check
+				;;
+		esac
+	}
+	#status_of_proc /sbin/opencld
+	#case $? in 7) : ;;
+	#	0) s=1
+	#	  /sbin/start-stop-daemon --stop --name /sbin/opencld
+#	#	   rc_check
+	#		;;
+	#esac
+	case $s in 1) sleep 1 ;; esac
+}
+
+start_host() {
+	[ -e /etc/vcl/is_host ] || return 0
+	if [ -e /etc/vcl/nodes ]
+	then
+		if [ -e /etc/vcl/mosix ]
+		then
+			args="-f/etc/vcl/nodes -m"
+		else
+			args=-f/etc/vcl/nodes
+		fi
+	else
+		case `cat /etc/vcl/mosix 2>/dev/null` in
+			1) args=-m ;;
+			2) args=-M ;;
+			*) echo Identity of back-end nodes is not defined.
+#			   rc_failed 2
+			   return 2 ;;
+		esac
+	fi
+	
+	#[ -x /sbin/broker ] && status_of_proc /sbin/broker && {
+	#	echo Already Running 1.
+#	#	rc_failed 1
+	#	return 1
+	#}
+	# status_of_proc /sbin/broker  && {
+	#	echo Already Running 2.
+#	#	rc_failed 1
+	#	return 1
+	#}
+	/sbin/start-stop-daemon --start --exec /sbin/broker -- $args
+#	rc_check
+[ -x /sbin/broker ] && {
+		echo Already Running.
+#		rc_failed 1
+		return 1
+	}
+}
+
+start_backend() {
+	[ -e /etc/vcl/is_back_end ] || return 0
+	
+#status_of_proc /sbin/opencld
+	#[ -x /sbin/opencld ] && {
+	#	echo Already Running.
+#		rc_failed 1
+	#	return 1
+	#}	
+	#[ -x /sbin/opencld ] && status_of_proc /sbin/opencld &&
+	#{
+	#	echo Already Running.
+#	#	rc_failed 1
+	#	return 1
+	#}
+	#status_of_proc /sbin/opencld && {
+	#	echo Already Running.
+#	#	rc_failed 1
+	#	return 1
+	#}
+	/sbin/start-stop-daemon --start --exec /sbin/opencld
+#	rc_check
+if [ -x /sbin/opencld ] 
+then
+		echo Already Running.
+#		rc_failed 1
+		return 1
+else
+	echo no corriendo
+fi
+
+}
+
+#rc_reset
+
+case "$1" in
+  start)
+	echo "Starting MOSIX-VCL..."
+	start_host
+	start_backend
+	;;
+  stop)
+	echo "Stopping MOSIX-VCL..."
+	stop_host
+	stop_backend
+	;;
+  status)
+	any=n
+	[ -e /etc/vcl/is_host ] && {
+		any=y
+		status_of_proc /sbin/broker
+		case $? in 0) echo Hosting-node is running.  ;;
+			*) #rc_check
+			   echo Hosting-node is not running. ;;
+		esac
+	}
+	[ -e /etc/vcl/is_back_end ] && {
+		any=y
+		status_of_proc /sbin/opencld
+		case $? in 0) echo Back-end is running. ;;
+			*) #rc_check
+			   echo Back-end is not running. ;;
+		esac
+	}
+	case $any in n) ;; esac #rc_failed 3 ;; esac
+	;;
+  restart|reload)
+	echo "Restarting MOSIX-VCL..."
+	stop_host
+	stop_backend
+	start_host
+	start_backend
+	;;
+  start_host)
+	if [ -e /etc/vcl/is_host ]
+	then
+		echo "Starting MOSIX-VCL host..."
+		start_host
+	else
+		echo "This is not a MOSIX-VCL hosting-node."
+	fi
+	;;
+  start_backend)
+	if [ -e /etc/vcl/is_back_end ]
+	then
+		echo "Starting MOSIX-VCL back-end..."
+		start_backend
+	else
+		echo "This is not a MOSIX-VCL back-end node."
+	fi
+	;;
+  stop_host)
+	echo "Stopping MOSIX-VCL host..."
+	stop_host
+	;;
+  stop_backend)
+	echo "Stopping MOSIX-VCL back-end..."
+	stop_backend
+	;;
+  restart_host)
+	echo "Restarting MOSIX-VCL host..."
+	stop_host
+	if [ -e /etc/vcl/is_host ]
+	then
+		start_host
+	else
+		echo "This is not a MOSIX VCL hosting-node."
+	fi
+	;;
+  restart_backend)
+	echo "Restarting MOSIX-VCL back-end..."
+	stop_backend
+	if [ -e /etc/vcl/is_back_end ]
+	then
+		start_backend
+	else
+		echo "This is not a MOSIX VCL back-end node."
+	fi
+	;;
+  *)
+	echo "Usage: vcl {start|stop|status|restart|reload}"
+	echo "  or   vcl {start_host|stop_host|restart_host}"
+	echo "  or   vcl {start_backend|stop_backend|restart_backend}"
+	exit 1
+esac
+
+true
+#rc_status -v
+#rc_exit

@@ -1,4 +1,4 @@
-cluster
+Cluster
 =======
 
 Proyecto de software aplicado. Cluster de alto rendimiento para renderizado gráfico utilizando CPU y GPU
@@ -15,14 +15,22 @@ Contenido del repositorio
 =========================
 
 *Documentos de la investigación.
+
 *Código fuente de pruebas.
+
 *Códio fuente de Kernel_Linux-3.0, MOSIX y MOSIX-VCL.
+
 *Script de Aumatización para Clusters tipo MOSIX.
+
 *Archivos de configuración.
+
 *Modelos utilizados para las pruebas.
+
 *Diagrama de Planificación Etapas de Cluster.
+
 
 Autores
 =======
 Juan Lautaro Silva Ortiz @jlautarosilva
+
 Rodrigo Alexis Venegas Muñoz https://twitter.com/rodrytaku
